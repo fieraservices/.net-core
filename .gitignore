@@ -3,6 +3,4 @@ bin/
 .vs/
 *.suo
 *.user
-packages/
-Configurations/
 *.orig
