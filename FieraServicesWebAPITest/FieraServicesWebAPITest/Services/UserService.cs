@@ -8,7 +8,18 @@ using System.Threading.Tasks;
 
 namespace FieraServicesWebAPITest.Services
 {
-    public class UserService
+    public interface IUserService
+    {
+        Task<List<UserDTO>> GetUsers();
+        Task<UserDTO> GetUser(int id);
+        Task<int> InsertUser(UserDTO userDTO);
+        Task<bool> UpdateUser(UserDTO userDTO);
+        Task<bool> DeleteUser(int id);
+        Task<bool> UserExists(int id);
+
+    }
+
+    public class UserService : IUserService
     {
         private readonly UserRepository _userRepository;
         private readonly IMapper _mapper;

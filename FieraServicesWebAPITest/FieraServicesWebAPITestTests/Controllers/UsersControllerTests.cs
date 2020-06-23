@@ -11,6 +11,7 @@ using AutoMapper;
 using FieraServicesWebAPITest.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Moq;
 
 namespace FieraServicesWebAPITest.Controllers.Tests
 {
@@ -241,6 +242,25 @@ namespace FieraServicesWebAPITest.Controllers.Tests
             Assert.IsNotNull(notFoundResponse);
             Assert.True(notFoundResponse is NotFoundResult);
             Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResponse.StatusCode);
+        }
+
+
+        [Test()]
+        public async Task DeleteUser_Exception_ReturnsConflict()
+        {
+            var mockService = new Mock<IUserService>();
+            mockService.Setup(p => p.UserExists(1)).ReturnsAsync(true);
+            mockService.Setup(p => p.DeleteUser(1)).ReturnsAsync(false);
+            var mockController = new UsersController(mockService.Object);
+            var response = await mockController.DeleteUser(1);
+            TestContext.WriteLine(JsonConvert.SerializeObject(response));
+
+            Assert.IsNotNull(response);
+            Assert.IsInstanceOf<ConflictResult>(response);
+            var conflictResponse = (ConflictResult)response;
+            Assert.IsNotNull(conflictResponse);
+            Assert.True(conflictResponse is ConflictResult);
+            Assert.AreEqual(StatusCodes.Status409Conflict, conflictResponse.StatusCode);
         }
     }
 }
