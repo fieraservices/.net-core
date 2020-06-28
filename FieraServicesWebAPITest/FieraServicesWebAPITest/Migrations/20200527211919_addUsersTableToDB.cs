@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FieraServicesWebAPITest.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class addUsersTableToDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

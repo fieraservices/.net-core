@@ -16,7 +16,6 @@ namespace FieraServicesWebAPITest.Services
         Task<bool> UpdateUser(UserDTO userDTO);
         Task<bool> DeleteUser(int id);
         Task<bool> UserExists(int id);
-
     }
 
     public class UserService : IUserService

@@ -12,6 +12,8 @@ using FieraServicesWebAPITest.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using FluentAssertions.Execution;
+using FluentAssertions;
 
 namespace FieraServicesWebAPITest.Controllers.Tests
 {
@@ -19,8 +21,8 @@ namespace FieraServicesWebAPITest.Controllers.Tests
     public class UsersControllerTests
     {
         private UsersController _usersController;
-        private UserService _userService;
         private UserRepository _userRepository;
+        private IUserService _userService;
         private IMapper _mapper;
 
         [SetUp]
@@ -55,13 +57,14 @@ namespace FieraServicesWebAPITest.Controllers.Tests
         {
             var response = await _usersController.GetUsers();
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Result);
-            Assert.IsInstanceOf<OkObjectResult>(response.Result);
-            var okResponse = (OkObjectResult)response.Result;
-            Assert.IsNotNull(okResponse);
-            Assert.True(okResponse is OkObjectResult);
-            Assert.AreEqual(StatusCodes.Status200OK, okResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull();
+                response.Result.Should().NotBeNull().And.BeOfType<OkObjectResult>();
+                var okResponse = (OkObjectResult)response.Result;
+                okResponse.Should().NotBeNull().And.BeOfType<OkObjectResult>();
+                okResponse.StatusCode.Should().NotBeNull().And.Be(StatusCodes.Status200OK);
+            }
         }
 
         [Test()]
@@ -69,13 +72,14 @@ namespace FieraServicesWebAPITest.Controllers.Tests
         {
             var response = await _usersController.GetUser(1);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Result);
-            Assert.IsInstanceOf<OkObjectResult>(response.Result);
-            var okResponse = (OkObjectResult)response.Result;
-            Assert.IsNotNull(okResponse);
-            Assert.True(okResponse is OkObjectResult);
-            Assert.AreEqual(StatusCodes.Status200OK, okResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull();
+                response.Result.Should().NotBeNull().And.BeOfType<OkObjectResult>();
+                var okResponse = (OkObjectResult)response.Result;
+                okResponse.Should().NotBeNull().And.BeOfType<OkObjectResult>();
+                okResponse.StatusCode.Should().NotBeNull().And.Be(StatusCodes.Status200OK);
+            }
         }
 
         [Test()]
@@ -83,13 +87,14 @@ namespace FieraServicesWebAPITest.Controllers.Tests
         {
             var response = await _usersController.GetUser(0);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Result);
-            Assert.IsInstanceOf<NotFoundResult>(response.Result);
-            var notFoundResponse = (NotFoundResult)response.Result;
-            Assert.IsNotNull(notFoundResponse);
-            Assert.True(notFoundResponse is NotFoundResult);
-            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull();
+                response.Result.Should().NotBeNull().And.BeOfType<NotFoundResult>();
+                var notFoundResponse = (NotFoundResult)response.Result;
+                notFoundResponse.Should().NotBeNull().And.BeOfType<NotFoundResult>();
+                notFoundResponse.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+            }
         }
 
         [Test()]
@@ -108,13 +113,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
 
             var response = await  _usersController.PutUser(1, user);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkResult>(response);
-            var okResponse = (OkResult)response;
-            Assert.IsNotNull(okResponse);
-            Assert.True(okResponse is OkResult);
-            Assert.AreEqual(StatusCodes.Status200OK, okResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<OkResult>();
+                var okResponse = (OkResult)response;
+                okResponse.Should().NotBeNull().And.BeOfType<OkResult>();
+                okResponse.StatusCode.Should().Be(StatusCodes.Status200OK);
+            }
         }
 
         [Test()]
@@ -127,13 +132,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
 
             var response = await _usersController.PutUser(1, user);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<BadRequestResult>(response);
-            var badRequestResponse = (BadRequestResult)response;
-            Assert.IsNotNull(badRequestResponse);
-            Assert.True(badRequestResponse is BadRequestResult);
-            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<BadRequestResult>();
+                var badRequestResponse = (BadRequestResult)response;
+                badRequestResponse.Should().NotBeNull().And.BeOfType<BadRequestResult>();
+                badRequestResponse.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+            }
         }
 
         [Test()]
@@ -146,13 +151,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
 
             var response = await _usersController.PutUser(0, user);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<NotFoundResult>(response);
-            var notFoundResponse = (NotFoundResult)response;
-            Assert.IsNotNull(notFoundResponse);
-            Assert.True(notFoundResponse is NotFoundResult);
-            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<NotFoundResult>();
+                var notFoundResponse = (NotFoundResult)response;
+                notFoundResponse.Should().NotBeNull().And.BeOfType<NotFoundResult>();
+                notFoundResponse.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+            }
         }
 
         [Test()]
@@ -165,13 +170,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
 
             var response = await _usersController.PutUser(1, user);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<ConflictResult>(response);
-            var conflictResponse = (ConflictResult)response;
-            Assert.IsNotNull(conflictResponse);
-            Assert.True(conflictResponse is ConflictResult);
-            Assert.AreEqual(StatusCodes.Status409Conflict, conflictResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<ConflictResult>();
+                var conflictResponse = (ConflictResult)response;
+                conflictResponse.Should().NotBeNull().And.BeOfType<ConflictResult>();
+                conflictResponse.StatusCode.Should().Be(StatusCodes.Status409Conflict);
+            }
         }
 
         [Test()]
@@ -189,13 +194,14 @@ namespace FieraServicesWebAPITest.Controllers.Tests
 
             var response = await _usersController.PostUser(user);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Result);
-            Assert.IsInstanceOf<CreatedAtActionResult>(response.Result);
-            var createdAtResponse = (CreatedAtActionResult)response.Result;
-            Assert.IsNotNull(createdAtResponse);
-            Assert.True(createdAtResponse is CreatedAtActionResult);
-            Assert.AreEqual(StatusCodes.Status201Created, createdAtResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull();
+                response.Result.Should().NotBeNull().And.BeOfType<CreatedAtActionResult>();
+                var createdAtResponse = (CreatedAtActionResult)response.Result;
+                createdAtResponse.Should().NotBeNull().And.BeOfType<CreatedAtActionResult>();
+                createdAtResponse.StatusCode.Should().NotBeNull().And.Be(StatusCodes.Status201Created);
+            }
         }
 
         [Test()]
@@ -207,13 +213,14 @@ namespace FieraServicesWebAPITest.Controllers.Tests
 
             var response = await _usersController.PostUser(user);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Result);
-            Assert.IsInstanceOf<ConflictResult>(response.Result);
-            var conflictResponse = (ConflictResult)response.Result;
-            Assert.IsNotNull(conflictResponse);
-            Assert.True(conflictResponse is ConflictResult);
-            Assert.AreEqual(StatusCodes.Status409Conflict, conflictResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull();
+                response.Result.Should().NotBeNull().And.BeOfType<ConflictResult>();
+                var conflictResponse = (ConflictResult)response.Result;
+                conflictResponse.Should().NotBeNull().And.BeOfType<ConflictResult>();
+                conflictResponse.StatusCode.Should().Be(StatusCodes.Status409Conflict);
+            }
         }
 
         [Test()]
@@ -221,13 +228,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
         {
             var response = await _usersController.DeleteUser(1);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkResult>(response);
-            var okResponse = (OkResult)response;
-            Assert.IsNotNull(okResponse);
-            Assert.True(okResponse is OkResult);
-            Assert.AreEqual(StatusCodes.Status200OK, okResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<OkResult>();
+                var okResponse = (OkResult)response;
+                okResponse.Should().NotBeNull().And.BeOfType<OkResult>();
+                okResponse.StatusCode.Should().Be(StatusCodes.Status200OK);
+            }
         }
 
         [Test()]
@@ -235,13 +242,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
         {
             var response = await _usersController.DeleteUser(0);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<NotFoundResult>(response);
-            var notFoundResponse = (NotFoundResult)response;
-            Assert.IsNotNull(notFoundResponse);
-            Assert.True(notFoundResponse is NotFoundResult);
-            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<NotFoundResult>();
+                var notFoundResponse = (NotFoundResult)response;
+                notFoundResponse.Should().NotBeNull().And.BeOfType<NotFoundResult>();
+                notFoundResponse.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+            }
         }
 
 
@@ -254,13 +261,13 @@ namespace FieraServicesWebAPITest.Controllers.Tests
             var mockController = new UsersController(mockService.Object);
             var response = await mockController.DeleteUser(1);
             TestContext.WriteLine(JsonConvert.SerializeObject(response));
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<ConflictResult>(response);
-            var conflictResponse = (ConflictResult)response;
-            Assert.IsNotNull(conflictResponse);
-            Assert.True(conflictResponse is ConflictResult);
-            Assert.AreEqual(StatusCodes.Status409Conflict, conflictResponse.StatusCode);
+            using (new AssertionScope())
+            {
+                response.Should().NotBeNull().And.BeOfType<ConflictResult>();
+                var conflictResponse = (ConflictResult)response;
+                conflictResponse.Should().NotBeNull().And.BeOfType<ConflictResult>();
+                conflictResponse.StatusCode.Should().Be(StatusCodes.Status409Conflict);
+            }
         }
     }
 }

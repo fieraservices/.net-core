@@ -13,11 +13,12 @@ using System.IO;
 using AutoMapper;
 using FieraServicesWebAPITest.Repositories;
 using FieraServicesWebAPITest.Services;
-using Swashbuckle.AspNetCore.Filters;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FieraServicesWebAPITest
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -40,7 +41,7 @@ namespace FieraServicesWebAPITest
 
             // Add Repositories and services
             services.AddScoped<UserRepository>();
-            services.AddScoped<UserService>();
+            services.AddScoped<IUserService,UserService>();
 
             // Configure Authentication service
             // 1. Add Authentication Services
@@ -78,6 +79,7 @@ namespace FieraServicesWebAPITest
                     }
                 });
 
+                // config to be able to add authorization header in the swagger page
                 options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
                     Description = "Authorization header using the Bearer scheme.",
@@ -87,7 +89,7 @@ namespace FieraServicesWebAPITest
                     Type = SecuritySchemeType.Http,
                     BearerFormat = "Bearer {token}"
                 });
-
+                // config to add the token in each method call
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
