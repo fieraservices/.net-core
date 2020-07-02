@@ -2,105 +2,56 @@ package com.fiera.api.exceptions;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.NestedRuntimeException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.transaction.TransactionSystemException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.RollbackException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(TransactionSystemException.class)
-    protected ResponseEntity<List<String>> handleTransactionException(TransactionSystemException ex) throws Throwable {
-        Throwable cause = ex.getCause();
-        if (!(cause instanceof RollbackException))
-            throw cause;
-        if (!(cause.getCause() instanceof ConstraintViolationException))
-            throw cause.getCause();
-        ConstraintViolationException validationException = (ConstraintViolationException) cause.getCause();
-        List<String> messages = validationException.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage).collect(Collectors.toList());
-        return new ResponseEntity<>(messages, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    @ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class })
-    public ResponseEntity<?> handleException(NestedRuntimeException e) {
-        String message = "Error parsing payload, check json syntax, date format and data types.";
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleException(MethodArgumentTypeMismatchException e) {
+        String message = "Error in the parameters, please check types and formats";
         ErrorMessage error = ErrorMessage.of(message, e.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    @ExceptionHandler({ IOException.class })
-    public ResponseEntity<?> handleException(IOException e) {
-        String message = "Unexpected error occurred, please contact support.";
-        ErrorMessage error = ErrorMessage.of(message, e.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        ErrorMessage error = ErrorMessage.of(errors.toString(), ex.getMessage(), LocalDateTime.now());
+        return handleExceptionInternal(ex, error, headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    @ExceptionHandler({ RestClientException.class })
-    public ResponseEntity<?> handleException(RestClientException e) {
-        String message = "Unexpected error occurred while calling external resource(s), please contact support.";
-        ErrorMessage error = ErrorMessage.of(message, e.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    @ExceptionHandler({ InstantiationException.class, IllegalAccessException.class })
-    public ResponseEntity<?> handleException(ReflectiveOperationException e) {
-        String message = "Unexpected error occurred, please contact support.";
-        ErrorMessage error = ErrorMessage.of(message, e.getMessage(), LocalDateTime.now());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(RecordNotFoundException.class)
-    public ResponseEntity<?> recordNotFoundException(RecordNotFoundException e) {
-        String message = "Record not found.";
+    @ExceptionHandler(CustomNotFoundException.class)
+    public ResponseEntity<?> handleException(CustomNotFoundException e) {
+        String message = "Record not found";
         ErrorMessage error = ErrorMessage.of(message, e.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CustomBadRequestException.class)
+    public ResponseEntity<?> handleException(CustomBadRequestException e) {
+        String message = "Bad Request";
+        ErrorMessage error = ErrorMessage.of(message, e.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class ErrorMessage {
 
-  private String id;
-  private String level;
   private LocalDateTime timestamp;
   private String message;
   private String details;

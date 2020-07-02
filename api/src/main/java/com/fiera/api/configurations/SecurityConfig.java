@@ -20,9 +20,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JwtWebSecurityConfigurer
-                .forRS256(apiAudience, issuer)
-                .configure(http)
-                .cors().and().csrf().disable().authorizeRequests()
-                .anyRequest().permitAll();
+            .forRS256(apiAudience, issuer)
+            .configure(http)
+            .cors().and().csrf().disable().authorizeRequests()
+            .anyRequest().permitAll();
     }
 }

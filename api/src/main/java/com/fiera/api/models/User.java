@@ -15,11 +15,11 @@ public class User {
     @Id 
     @GeneratedValue
     private Integer UserId;
-    @NotNull
+    @NotNull(message = "Doc Number is required")
     private String DocNumber;
-    @NotNull
+    @NotNull(message = "First Name is required")
     private String FirstName;
-    @NotNull
+    @NotNull(message = "Last Name is required")
     private String LastName;
     private String Email;
     private String Phone;

@@ -18,15 +18,23 @@ public class Swagger2Config {
 
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select().paths(PathSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage("com.fiera.api.controllers")).build()
-                .useDefaultResponseMessages(false);
+        return new Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo())
+            .select()
+            .paths(PathSelectors.any())
+            .apis(RequestHandlerSelectors.basePackage("com.fiera.api.controllers"))
+            .build()
+            .useDefaultResponseMessages(false);
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("Fiera Services REST API").description("Demo project of a Rest API")
-                .contact(new Contact("Julian Largo", " www.fieraservices.com", "jlargo@fieraservices.com"))
-                .license("Apache 2.0").licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html").version("1.0.0")
-                .build();
+        return new ApiInfoBuilder()
+            .title("Fiera Services REST API")
+            .description("Demo project of a Rest API")  
+            .contact(new Contact("Julian Largo", " www.fieraservices.com", "jlargo@fieraservices.com"))
+            .license("Apache 2.0")
+            .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
+            .version("1.0.0") 
+            .build();
     }
 }

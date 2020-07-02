@@ -25,7 +25,7 @@ class LoadDatabase {
     user.setPhone("987654321");
     user.setAddress("123 death star avenue");
     user.setSecretField("SecretField");
-    
+
     return args -> {
       log.info("Preloading " + repository.save(user));
     };
