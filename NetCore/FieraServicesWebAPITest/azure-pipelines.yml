@@ -1,0 +1,49 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps: 
+- task: UseDotNet@2
+  displayName: 'Use Dot Net Core 3.x'
+  inputs:
+    packageType: 'sdk'
+    version: '3.x'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: 'build'
+    projects: '**/*Test/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    testRunTitle: 'Tests'
+    publishTestResults: true
+
+- task: reportgenerator@4
+  inputs:
+    reports: '$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml'
+    targetdir: '$(Build.SourcesDirectory)/TestResults/Coverage'
+    sourcedirs: '$(Build.SourcesDirectory)'
+  
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage report'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/Coverage/*cobertura.xml'
+    reportDirectory: '$(Build.SourcesDirectory)/TestResults/Coverage'
