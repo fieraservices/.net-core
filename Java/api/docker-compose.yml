@@ -3,6 +3,18 @@ version: '3.4'
 services:
   fieraapi:
     image: fieraapi
-    build: .
+    container_name: fieraapi
     ports:
-      - 8080
+      - 8080:8080
+    image: fieraapi
+    build: .
+    depends_on:
+      - dbpostgresql
+  dbpostgresql:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=fieradb

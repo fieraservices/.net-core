@@ -35,10 +35,10 @@ import io.swagger.annotations.ApiResponse;
 @PreAuthorize("isAuthenticated()")
 @Api(value = "Fiera API", description = "Users Controller")
 public class UserController {
-  private final UserService _userService;
+  private final UserService userService;
 
-  UserController(final UserService userService) {
-    _userService = userService;
+  public UserController(final UserService newUserService) {
+    userService = newUserService;
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +46,7 @@ public class UserController {
   @ApiResponses({ @ApiResponse(code = 200, message = "Success", response = UserDTO.class, responseContainer = "List"),
       @ApiResponse(code = 401, message = "Unathorized") })
   public ResponseEntity<List<UserDTO>> getUsers() {
-    return ResponseEntity.ok(_userService.getUsers());
+    return ResponseEntity.ok(userService.getUsers());
   }
 
   @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -55,9 +55,9 @@ public class UserController {
       @ApiResponse(code = 400, message = "BadRequest", response = ErrorMessage.class),
       @ApiResponse(code = 404, message = "Not found", response = ErrorMessage.class),
       @ApiResponse(code = 401, message = "Unathorized") })
-  public ResponseEntity<UserDTO> getUserById(@ApiParam(required = true, value = "User Id") @PathVariable int userId)
+  public ResponseEntity<UserDTO> getUserById(@ApiParam(required = true, value = "User Id") @PathVariable Long userId)
       throws CustomNotFoundException {
-    return ResponseEntity.ok(_userService.getUserById(userId));
+    return ResponseEntity.ok(userService.getUserById(userId));
   }
 
   @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,9 +66,9 @@ public class UserController {
       @ApiResponse(code = 400, message = "BadRequest", response = ErrorMessage.class),
       @ApiResponse(code = 404, message = "Not found", response = ErrorMessage.class),
       @ApiResponse(code = 401, message = "Unathorized") })
-  public ResponseEntity<Object> updateUser(@ApiParam(required = true, value = "User Id") @PathVariable int userId,
+  public ResponseEntity<Object> updateUser(@ApiParam(required = true, value = "User Id") @PathVariable Long userId,
       @Valid @RequestBody UserDTO userDTO) throws CustomNotFoundException, CustomBadRequestException {
-    return ResponseEntity.ok(_userService.updateUser(userId, userDTO));
+    return ResponseEntity.ok(userService.updateUser(userId, userDTO));
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -77,7 +77,7 @@ public class UserController {
       @ApiResponse(code = 400, message = "BadRequest", response = ErrorMessage.class),
       @ApiResponse(code = 401, message = "Unathorized") })
   public ResponseEntity<Object> addUser(@Valid @RequestBody UserDTO userDTO) throws CustomBadRequestException {
-    int id = _userService.addUser(userDTO);
+    Long id = userService.addUser(userDTO);
     userDTO.setUserId(id);
     URI location = ServletUriComponentsBuilder.fromCurrentRequest()
       .path("/{id}")
@@ -92,8 +92,8 @@ public class UserController {
   @ApiResponses({ @ApiResponse(code = 200, message = "Success"),
       @ApiResponse(code = 404, message = "Not found", response = ErrorMessage.class),
       @ApiResponse(code = 401, message = "Unathorized") })
-  public ResponseEntity<Object> deleteUser(@ApiParam(required = true, value = "User Id") @PathVariable int userId)
+  public ResponseEntity<Object> deleteUser(@ApiParam(required = true, value = "User Id") @PathVariable Long userId)
       throws CustomNotFoundException {
-    return ResponseEntity.ok(_userService.deleteUser(userId));
+    return ResponseEntity.ok(userService.deleteUser(userId));
   }
 }

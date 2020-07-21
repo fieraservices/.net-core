@@ -13,7 +13,7 @@ public class UserDTO {
 
     @Id 
     @GeneratedValue
-    private Integer UserId;
+    private Long UserId;
     @NotNull(message = "Doc Number is required")
     private String DocNumber;
     @NotNull(message = "First Name is required")
